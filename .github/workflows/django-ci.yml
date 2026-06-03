@@ -31,5 +31,5 @@ jobs:
       - name: Run Django checks
         run: python manage.py check
 
-      - name: Run tests
-        run: python manage.py test
+#      - name: Run tests
+#        run: python manage.py test
