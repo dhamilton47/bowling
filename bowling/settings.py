@@ -59,6 +59,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'address',
+    'game',
+    'highschool',
+    'person',
+    'match',
+    'lanes',
+    'player',
+    'student',
+    'team',
 ]
 
 MIDDLEWARE = [
