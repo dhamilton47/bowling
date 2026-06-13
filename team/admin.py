@@ -6,4 +6,4 @@ from .models import Team
 class TeamAdmin(admin.ModelAdmin):
 	list_display = ("team",)
 	search_fields = ("team",)
-	filter_horizontal = ("team", "players",)
+	filter_horizontal = ("players",)

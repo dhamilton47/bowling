@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Open Bowling Activities</title>
+    <style>
+        body { font-family: Georgia, serif; margin: 2rem; }
+        .layout { display: grid; gap: 1.5rem; }
+        .card { border: 1px solid #333; padding: 1rem; border-radius: 8px; }
+        .players { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.25rem 1rem; }
+    </style>
+</head>
+<body>
+    <h1>Open Bowling</h1>
+    <p><a href="{{ admin_url }}">Go to Admin</a></p>
+
+    <div class="layout">
+        <section class="card">
+            <h2>Start New Activity</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Create Activity And Games</button>
+            </form>
+        </section>
+
+        <section class="card">
+            <h2>Recent Activities</h2>
+            {% if activities %}
+                <ul>
+                    {% for activity in activities %}
+                        <li>
+                            <strong>{{ activity }}</strong>
+                            {% with first_entry=activity.activity_games.all.0 %}
+                                {% if first_entry %}
+                                    - <a href="{% url 'openbowl:open_bowling_activity' activity.id first_entry.player_id %}">Open Activity</a>
+                                {% endif %}
+                            {% endwith %}
+                            <div class="players">
+                                {% for entry in activity.activity_games.all %}
+                                    <span>{{ entry.player }} ({{ entry.game.final_score.score|default:0 }})</span>
+                                {% empty %}
+                                    <span>No players linked.</span>
+                                {% endfor %}
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No activities yet.</p>
+            {% endif %}
+        </section>
+    </div>
+</body>
+</html>

@@ -1,0 +1,46 @@
+/* Style for Add buttons similar to Django admin "+" icon */
+.add-related-btn {
+    display: inline-block;
+    background: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 28px;
+    cursor: pointer;
+    margin-left: 8px;
+    vertical-align: middle;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    transition: background 0.2s;
+}
+.add-related-btn:hover {
+    background: #218838;
+}
+
+/* Style for Cancel buttons */
+.cancel-btn {
+    background: var(--delete-button-bg);
+/*    background: #dc3545;*/
+    color: #fff;
+/*    display: inline-block;
+    background: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 16px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    margin-left: 8px;
+    vertical-align: middle;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    transition: background 0.2s;*/
+}
+.cancel-btn:hover {
+    background: #c82333;
+}

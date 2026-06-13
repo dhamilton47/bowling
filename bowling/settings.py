@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'person',
     'match',
     'lanes',
+    'openbowl',
     'player',
     'student',
     'team',

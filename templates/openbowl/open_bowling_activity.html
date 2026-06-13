@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{{ activity }}</title>
+    <style>
+        :root {
+            --paper: #f8f1df;
+            --ink: #202020;
+            --line: #2f2f2f;
+            --accent: #9c2f2f;
+        }
+        body {
+            font-family: "Times New Roman", Georgia, serif;
+            margin: 1.25rem;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at 12% 10%, #fff8ec 0, #f8f1df 46%, #efe4cb 100%);
+        }
+        h1, h2, h3 { margin: 0 0 0.6rem 0; }
+        .layout { display: grid; gap: 1rem; }
+        .top-links {
+            border: 1px solid var(--line);
+            padding: 0.5rem 0.75rem;
+            background: #fffaf0;
+        }
+        .top-links a { color: var(--accent); text-decoration: none; margin-right: 0.5rem; }
+        .card {
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 0.8rem;
+            background: rgba(255, 252, 245, 0.86);
+        }
+        .card:first-child { margin-top: 1.0rem; }
+        .player-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+        .player-nav a {
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            padding: 0.3rem 0.55rem;
+            text-decoration: none;
+            color: var(--ink);
+            background: #fff;
+        }
+        .player-nav .active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        .scoresheet-wrap {
+            border: 2px solid var(--line);
+            padding: 0.7rem;
+            overflow-x: auto;
+            background: #fff;
+        }
+        .participant-sheet {
+            margin-bottom: 0.9rem;
+        }
+        .participant-sheet.current .scoresheet-wrap {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(156, 47, 47, 0.2);
+        }
+        .scoresheet-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 0.55rem;
+            font-size: 0.95rem;
+        }
+        .scoresheet-title strong {
+            font-size: 1.05rem;
+            letter-spacing: 0.04em;
+        }
+        .sheet-frames {
+            display: grid;
+            grid-template-columns: repeat(9, minmax(76px, 1fr)) minmax(96px, 1.35fr);
+            gap: 0.28rem;
+            min-width: 820px;
+        }
+        .frame-box {
+            border: 1.5px solid var(--line);
+            display: grid;
+            grid-template-rows: auto auto auto;
+            background: #fffefb;
+            min-height: 94px;
+        }
+        .frame-num {
+            font-size: 0.7rem;
+            text-align: center;
+            padding: 0.1rem 0.2rem;
+            border-bottom: 1px solid var(--line);
+            letter-spacing: 0.08em;
+            font-weight: 600;
+        }
+        .roll-cells {
+            display: grid;
+            border-bottom: 1px solid var(--line);
+        }
+        .roll-cells.regular {
+            grid-template-columns: 1fr 1fr;
+            min-height: 26px;
+        }
+        .roll-cells.tenth {
+            grid-template-columns: 1fr 1fr 1fr;
+            min-height: 26px;
+        }
+        .roll-cells span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+        .roll-cells span + span { border-left: 1px solid var(--line); }
+        .running-total {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            min-height: 40px;
+        }
+        .final-badge {
+            border: 1px solid var(--line);
+            padding: 0.15rem 0.45rem;
+            font-weight: 700;
+            background: #f5ead0;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(120px, 1fr));
+            gap: 0.4rem 0.8rem;
+            align-items: end;
+        }
+        .form-grid p { margin: 0; }
+        .button-row { margin-top: 0.65rem; }
+        button {
+            border: 1px solid var(--line);
+            background: #f1e3be;
+            padding: 0.35rem 0.7rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 900px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .top-links { font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+    <h1>{{ activity }}</h1>
+    <div class="top-links">
+        <a href="{% url 'openbowl:open_bowling_home' %}">Back to Open Bowling Home</a>
+        <a href="{{ admin_url }}">Admin Home</a>
+        <a href="{{ admin_game_changelist_url }}">Game Admin</a>
+        <a href="{{ admin_game_change_url }}">Current Game In Admin</a>
+    </div>
+
+    {% if messages %}
+        <ul class="card">
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div class="layout">
+        <section class="card">
+            <h2>Players</h2>
+            <div class="player-nav">
+                {% for entry in entries %}
+                    <a class="{% if entry.id == current_entry.id %}active{% endif %}" href="{% url 'openbowl:open_bowling_activity' activity.id entry.player_id %}">
+                        {{ entry.player }} ({{ entry.game.final_score.score|default:0 }})
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="card">
+            {% for sheet in participant_sheets %}
+                <div class="participant-sheet {% if sheet.is_current %}current{% endif %}">
+                    <div class="scoresheet-wrap">
+                        <div class="scoresheet-title">
+                            {{ sheet.entry.player }}
+                            {% if sheet.is_current %}(Selected){% endif %}
+                            <span class="final-badge">Total {{ sheet.total|default:0 }}</span>
+                        </div>
+
+                        <div class="sheet-frames">
+                            {% for sf in sheet.frames %}
+                                <div class="frame-box">
+                                    <div class="frame-num">FRAME {{ sf.number }}</div>
+                                    <div class="roll-cells {% if sf.number == 10 %}tenth{% else %}regular{% endif %}">
+                                        {% for mark in sf.marks %}
+                                            <span>{{ mark }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="running-total">{{ sf.running_total }}</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </section>
+
+        <section class="card">
+            <h2>Record Roll</h2>
+            <h3>{{ current_entry.player }}</h3>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-grid">
+                    {{ roll_form.as_p }}
+                </div>
+                <div class="button-row">
+                    <button type="submit" name="save_roll" value="1">Save Roll</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="card">
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" name="repeat_activity" value="1">Start Another Game (Same Players)</button>
+            </form>
+        </section>
+    </div>
+</body>
+</html>
